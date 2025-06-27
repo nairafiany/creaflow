@@ -1,0 +1,518 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum definitions
+enum UserRole {
+  CLIENT
+  EDITOR
+  ADMIN
+}
+
+enum ProjectStatus {
+  DRAFT
+  IN_PROGRESS
+  REVISION
+  DONE
+  CANCELLED
+}
+
+enum RevisionStatus {
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CREDIT_CARD
+  PAYPAL
+  GOPAY
+  OVO
+  DANA
+  OTHER
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum FileType {
+  VIDEO
+  AUDIO
+  IMAGE
+  DOCUMENT
+  INVOICE
+  RECEIPT
+  OTHER
+}
+
+enum ProjectPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum NotificationType {
+  PROJECT_ASSIGNED
+  REVISION_REQUESTED
+  REVISION_SUBMITTED
+  PROJECT_COMPLETED
+  PAYMENT_RECEIVED
+  INVOICE_SENT
+  DEADLINE_REMINDER
+  GENERAL
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+// NextAuth.js required tables
+model Account {
+  id                    String    @id
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  accountId             String
+  providerId            String
+
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("accounts")
+}
+
+
+model Session {
+  id        String   @id
+  createdAt DateTime
+  updatedAt DateTime
+  
+  expiresAt DateTime
+  token     String @unique
+  ipAddress String?
+  userAgent String?
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Verification {
+  id         String    @id
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+
+  @@map("verifications")
+}
+
+// Core application tables
+model User {
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  name          String?
+  email         String    @unique
+  emailVerified Boolean? @default(false)
+  image         String?
+  role          UserRole  @default(CLIENT)
+  phone         String?
+  company       String?
+  bio           String?
+  isActive      Boolean   @default(true)
+  
+  // Additional profile info
+  website       String?
+  linkedin      String?
+  portfolio     String?
+  timezone      String?   @default("Asia/Jakarta")
+  
+  // Editor specific fields
+  hourlyRate    Decimal?  @db.Decimal(10, 2)
+  specialties   String[]  // Array of specialties like ["Motion Graphics", "Color Grading"]
+  yearsExperience Int?
+
+  // NextAuth relations
+  accounts Account[]
+  sessions Session[]
+
+  // Application relations
+  clientProjects    Project[]      @relation("ClientProjects")
+  editorProjects    Project[]      @relation("EditorProjects")
+  revisions         Revision[]
+  files             File[]
+  
+  // Communication
+  sentMessages      Message[]      @relation("SentMessages")
+  receivedMessages  Message[]      @relation("ReceivedMessages")
+  notifications     Notification[]
+  
+  // Payment relations
+  clientInvoices    Invoice[]      @relation("ClientInvoices")
+  editorInvoices    Invoice[]      @relation("EditorInvoices")
+  payments          Payment[]
+  
+  // Activity tracking
+  activityLogs      ActivityLog[]
+
+  @@map("users")
+}
+
+model Project {
+  id          String         @id @default(cuid())
+  title       String
+  description String?        @db.Text
+  brief       String?        @db.Text
+  status      ProjectStatus  @default(DRAFT)
+  priority    ProjectPriority @default(MEDIUM)
+  
+  // Timeline
+  deadline    DateTime?
+  estimatedHours Int?
+  actualHours    Int?
+  
+  // Budget
+  budget      Decimal?       @db.Decimal(10, 2)
+  agreedPrice Decimal?       @db.Decimal(10, 2)
+  currency    String         @default("IDR")
+  
+  // Project details
+  videoType   String?        // e.g., "Commercial", "Wedding", "Corporate"
+  duration    String?        // Expected video duration
+  resolution  String?        // e.g., "1080p", "4K"
+  framerate   String?        // e.g., "24fps", "30fps"
+  
+  // Client information
+  clientId    String
+  client      User           @relation("ClientProjects", fields: [clientId], references: [id], onDelete: Cascade)
+  
+  // Editor assignment
+  editorId    String?
+  editor      User?          @relation("EditorProjects", fields: [editorId], references: [id], onDelete: SetNull)
+  
+  // Progress tracking
+  progressPercentage Int    @default(0)
+  
+  // Timestamps
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  startedAt   DateTime?
+  completedAt DateTime?
+  assignedAt  DateTime?
+
+  // Relations
+  revisions     Revision[]
+  files         File[]
+  invoices      Invoice[]
+  messages      Message[]
+  activityLogs  ActivityLog[]
+
+  @@map("projects")
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  title         String
+  description   String?       @db.Text
+  status        InvoiceStatus @default(DRAFT)
+  
+  // Invoice details
+  items         Json?         // Array of invoice items
+  notes         String?       @db.Text
+  terms         String?       @db.Text
+  
+  // Amounts
+  subtotal      Decimal       @db.Decimal(10, 2)
+  taxRate       Decimal?      @db.Decimal(5, 2) // Tax percentage
+  taxAmount     Decimal?      @db.Decimal(10, 2)
+  discount      Decimal?      @db.Decimal(10, 2)
+  total         Decimal       @db.Decimal(10, 2)
+  currency      String        @default("IDR")
+  
+  // Dates
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime
+  paidDate      DateTime?
+  
+  // Relations
+  projectId     String?
+  project       Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  
+  // Client (who receives the invoice)
+  clientId      String
+  client        User          @relation("ClientInvoices", fields: [clientId], references: [id], onDelete: Cascade)
+  
+  // Editor (who sends the invoice)
+  editorId      String
+  editor        User          @relation("EditorInvoices", fields: [editorId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  payments      Payment[]
+  files         File[]
+
+  @@map("invoices")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  paymentNumber String        @unique
+  amount        Decimal       @db.Decimal(10, 2)
+  currency      String        @default("IDR")
+  status        PaymentStatus @default(PENDING)
+  method        PaymentMethod @default(BANK_TRANSFER)
+  
+  // Payment details
+  reference     String?       // Bank reference, transaction ID, etc.
+  notes         String?       @db.Text
+  receiptUrl    String?       // URL to receipt/proof of payment
+  
+  // Dates
+  paymentDate   DateTime?
+  confirmedDate DateTime?
+  
+  // Relations
+  invoiceId     String
+  invoice       Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  // User who made the payment
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  files         File[]
+
+  @@map("payments")
+}
+
+model Revision {
+  id          String         @id @default(cuid())
+  title       String
+  description String?        @db.Text
+  status      RevisionStatus @default(PENDING)
+  feedback    String?        @db.Text
+  
+  // Revision details
+  revisionNumber Int          @default(1)
+  isMinorRevision Boolean     @default(false)
+  
+  // Timeline tracking
+  timeRequested DateTime?
+  timeStarted   DateTime?
+  timeCompleted DateTime?
+  
+  // Project relation
+  projectId   String
+  project     Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // User who created the revision
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  reviewedAt  DateTime?
+
+  // Relations
+  files File[]
+
+  @@map("revisions")
+}
+
+model File {
+  id          String   @id @default(cuid())
+  filename    String
+  originalName String
+  path        String   // File path or URL
+  url         String?  // Public URL if using cloud storage
+  size        Int?     // File size in bytes
+  mimeType    String?
+  type        FileType @default(OTHER)
+  
+  // File metadata
+  duration    Int?     // For video/audio files (in seconds)
+  dimensions  String?  // For images/videos (e.g., "1920x1080")
+  
+  // Organization
+  isPublic    Boolean  @default(false)
+  tags        String[] // For organizing files
+  
+  // Relations
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  
+  revisionId  String?
+  revision    Revision? @relation(fields: [revisionId], references: [id], onDelete: SetNull)
+  
+  invoiceId   String?
+  invoice     Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  
+  paymentId   String?
+  payment     Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("files")
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  content     String   @db.Text
+  isRead      Boolean  @default(false)
+  
+  // Relations
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  receiverId  String
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  // Parent message for threading
+  parentId    String?
+  parent      Message? @relation("MessageThread", fields: [parentId], references: [id], onDelete: SetNull)
+  replies     Message[] @relation("MessageThread")
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("messages")
+}
+
+model Notification {
+  id          String             @id @default(cuid())
+  title       String
+  message     String             @db.Text
+  type        NotificationType
+  status      NotificationStatus @default(UNREAD)
+  
+  // Optional data for the notification
+  data        Json?
+  
+  // Relations
+  userId      String
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Timestamps
+  createdAt   DateTime           @default(now())
+  readAt      DateTime?
+
+  @@map("notifications")
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  action      String   // e.g., "project_created", "revision_submitted"
+  description String   @db.Text
+  
+  // Metadata
+  metadata    Json?    // Additional data about the action
+  ipAddress   String?
+  userAgent   String?
+  
+  // Relations
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+
+  @@map("activity_logs")
+}
+
+// Template system for common project types
+model ProjectTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  category    String   // e.g., "Wedding", "Corporate", "Social Media"
+  
+  // Template data
+  defaultBrief     String? @db.Text
+  estimatedHours   Int?
+  suggestedPrice   Decimal? @db.Decimal(10, 2)
+  requiredFiles    String[] // Array of required file types
+  deliverables     String[] // Array of expected deliverables
+  
+  // Settings
+  isActive    Boolean  @default(true)
+  isPublic    Boolean  @default(true)
+  
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("project_templates")
+}
+
+// System settings
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  type      String   @default("string") // string, number, boolean, json
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}
