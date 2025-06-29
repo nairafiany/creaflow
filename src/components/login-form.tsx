@@ -15,16 +15,18 @@ export const LoginForm = () => {
   const router = useRouter();
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
     evt.preventDefault();
+
     setIsPending(true);
-    const formData = new FormData(evt.target as HTMLFormElement);
-    setIsPending(false);
+
+    const formData = new FormData(evt.currentTarget);
+
     const { error } = await signInEmailAction(formData);
 
     if (error) {
       toast.error(error);
       setIsPending(false);
     } else {
-      toast.success("Login successful. Good to have you back!");
+      toast.success("Login successful. Good to have you back.");
       router.push("/profile");
     }
   }
