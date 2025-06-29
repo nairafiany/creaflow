@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { signUp } from "@/lib/auth-client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signUpEmailAction } from "@/actions/sign-up.action";
 
 export const RegisterForm = () => {
   const [isPending, setIsPending] = useState(false);
@@ -15,42 +16,44 @@ export const RegisterForm = () => {
 
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
     evt.preventDefault();
+    setIsPending(true);
     const formData = new FormData(evt.target as HTMLFormElement);
+    setIsPending(false);
+    const { error } = await signUpEmailAction(formData);
 
-    const name = String(formData.get("name"));
-    if (!name) return toast.error("Please enter your name");
+    if (error) {
+      toast.error(error);
+      setIsPending(false);
+    } else {
+      toast.success("Registration complete. You're all set!");
+      router.push("/auth/login"); // <-- navigate to /profile
+    }
 
-    const email = String(formData.get("email"));
-    if (!email) return toast.error("Please enter your email");
+    // console.log({ name, email, password });
 
-    const password = String(formData.get("password"));
-    if (!password) return toast.error("Please enter your password");
+    // await signUp.email(
+    //   {
+    //     name,
+    //     email,
+    //     password,
+    //   },
+    //   {
+    //     onRequest: () => {
+    //       setIsPending(true);
+    //     },
+    //     onResponse: () => {
+    //       setIsPending(false);
+    //     },
+    //     onError: (ctx: any) => {
+    //       toast.error(ctx.error.message);
+    //     },
+    //     onSuccess: () => {
+    //       toast.success("Registration complete. You're all set!");
 
-    console.log({ name, email, password });
-
-    await signUp.email(
-      {
-        name,
-        email,
-        password,
-      },
-      {
-        onRequest: () => {
-          setIsPending(true);
-        },
-        onResponse: () => {
-          setIsPending(false);
-        },
-        onError: (ctx: any) => {
-          toast.error(ctx.error.message);
-        },
-        onSuccess: () => {
-          toast.success("Registration complete. You're all set!");
-
-          router.push("/profile"); // <-- navigate to /profile
-        },
-      }
-    );
+    //       router.push("/profile"); // <-- navigate to /profile
+    //     },
+    //   }
+    // );
   }
   return (
     <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">

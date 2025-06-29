@@ -9,5 +9,15 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+    minPasswordLength: 6,
+    // password: {
+    //   hash: hashPassword,
+    //   verify: verifyPassword,
+    // },
+  },
+  advanced: {
+    database: {
+      generateId: false,
+    },
   },
 });
