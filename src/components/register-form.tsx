@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { signUp } from "@/lib/auth-client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signUpEmailAction } from "@/actions/sign-up.action";
+import { signUpEmailAction } from "@/actions/sign-up-email.action";
 
 export const RegisterForm = () => {
   const [isPending, setIsPending] = useState(false);
@@ -26,34 +26,8 @@ export const RegisterForm = () => {
       setIsPending(false);
     } else {
       toast.success("Registration complete. You're all set!");
-      router.push("/auth/login"); // <-- navigate to /profile
+      router.push("/auth/login");
     }
-
-    // console.log({ name, email, password });
-
-    // await signUp.email(
-    //   {
-    //     name,
-    //     email,
-    //     password,
-    //   },
-    //   {
-    //     onRequest: () => {
-    //       setIsPending(true);
-    //     },
-    //     onResponse: () => {
-    //       setIsPending(false);
-    //     },
-    //     onError: (ctx: any) => {
-    //       toast.error(ctx.error.message);
-    //     },
-    //     onSuccess: () => {
-    //       toast.success("Registration complete. You're all set!");
-
-    //       router.push("/profile"); // <-- navigate to /profile
-    //     },
-    //   }
-    // );
   }
   return (
     <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">

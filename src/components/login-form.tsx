@@ -7,44 +7,26 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { signInEmailAction } from "@/actions/sign-in-email.action";
 
 export const LoginForm = () => {
   const [isPending, setIsPending] = useState(false);
 
   const router = useRouter();
-
   async function handleSubmit(evt: React.FormEvent<HTMLFormElement>) {
     evt.preventDefault();
+    setIsPending(true);
+    const formData = new FormData(evt.target as HTMLFormElement);
+    setIsPending(false);
+    const { error } = await signInEmailAction(formData);
 
-    const formData = new FormData(evt.currentTarget);
-
-    const email = String(formData.get("email"));
-    if (!email) return toast.error("Please enter your email");
-
-    const password = String(formData.get("password"));
-    if (!password) return toast.error("Please enter your password");
-
-    await signIn.email(
-      {
-        email,
-        password,
-      },
-      {
-        onRequest: () => {
-          setIsPending(true);
-        },
-        onResponse: () => {
-          setIsPending(false);
-        },
-        onError: (ctx) => {
-          toast.error(ctx.error.message);
-        },
-        onSuccess: () => {
-          toast.success("Login successful. Good to have you back!");
-          router.push("/profile"); // <-- navigate to /profile
-        },
-      }
-    );
+    if (error) {
+      toast.error(error);
+      setIsPending(false);
+    } else {
+      toast.success("Login successful. Good to have you back!");
+      router.push("/profile");
+    }
   }
 
   return (
