@@ -1,9 +1,12 @@
-import { Button } from "@/components/ui/button";
+import { GetStartedButton } from "@/components/get-started";
 
-export default function Home() {
+export default function Page() {
   return (
-    <div>
-      <Button>Hello world</Button>
+    <div className="flex items-center justify-center h-dvh">
+      <div className="flex justify-center gap-8 flex-col items-center">
+        <h1 className="text-6xl font-bold">Creaflow</h1>
+        <GetStartedButton />
+      </div>
     </div>
   );
 }
