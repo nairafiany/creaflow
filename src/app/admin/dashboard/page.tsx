@@ -7,6 +7,7 @@ import {
   PlaceholderDeleteUserButton,
 } from "@/components/delete-user-button";
 import { ReturnButton } from "@/components/return-button";
+import { UserRoleSelect } from "@/components/user-role-select";
 // import { UserRoleSelect } from "@/components/user-role-select";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -82,7 +83,12 @@ export default async function Page() {
                 <td className="px-4 py-2">{user.id.slice(0, 8)}</td>
                 <td className="px-4 py-2">{user.name}</td>
                 <td className="px-4 py-2">{user.email}</td>
-                <td className="px-4 py-2">{user.role}</td>
+                <td className="px-4 py-2">
+                  <UserRoleSelect
+                    userId={user.id}
+                    role={user.role as UserRole}
+                  />
+                </td>
                 <td className="px-4 py-2">
                   {user.role === "CLIENT" || user.role === "EDITOR" ? (
                     <DeleteUserButton userId={user.id} />
