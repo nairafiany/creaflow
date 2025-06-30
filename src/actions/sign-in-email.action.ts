@@ -23,16 +23,14 @@ export async function signInEmailAction(formData: FormData) {
     return { error: null };
   } catch (err) {
     if (err instanceof APIError) {
-      // const errCode = err.body ? (err.body.code as ErrorCode) : "UNKNOWN";
-      // console.dir(err, { depth: 5 });
-      // switch (errCode) {
-      //   case "EMAIL_NOT_VERIFIED":
-      //     redirect("/auth/verify?error=email_not_verified");
-      //   default:
-      //     return { error: err.message };
-      // }
-
-      return { error: err.message };
+      const errCode = err.body ? (err.body.code as ErrorCode) : "UNKNOWN";
+      console.dir(err, { depth: 5 });
+      switch (errCode) {
+        case "EMAIL_NOT_VERIFIED":
+          redirect("/auth/verify?error=email_not_verified");
+        default:
+          return { error: err.message };
+      }
     }
 
     return { error: "Internal Server Error" };
