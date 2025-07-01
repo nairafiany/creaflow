@@ -58,7 +58,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
       name: "Alex Johnson",
       role: "Freelance Video Editor",
       content:
-        "EditFlow mengubah cara saya mengelola klien. Sekarang semua terorganisir dengan baik!",
+        "Creaflow mengubah cara saya mengelola klien. Sekarang semua terorganisir dengan baik!",
       rating: 5,
       avatar: "AJ",
     },
@@ -66,7 +66,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
       name: "Sarah Wilson",
       role: "Creative Agency Owner",
       content:
-        "Dengan EditFlow, tim saya bisa fokus pada editing tanpa khawatir kehilangan track project.",
+        "Dengan Creaflow, tim saya bisa fokus pada editing tanpa khawatir kehilangan track project.",
       rating: 5,
       avatar: "SW",
     },
@@ -133,7 +133,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                     <Video className="w-10 h-10 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                    EditFlow Dashboard
+                    Creaflow Dashboard
                   </h3>
                   <p className="text-gray-500">
                     Complete CRM for Video Editors
@@ -249,7 +249,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
               Everything you need to manage your editing business
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              From client onboarding to final payment, EditFlow streamlines your
+              From client onboarding to final payment, Creaflow streamlines your
               entire workflow
             </p>
           </div>
@@ -288,7 +288,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
               Loved by video editors worldwide
             </h2>
             <p className="text-xl text-gray-600">
-              See what our community has to say about EditFlow
+              See what our community has to say about Creaflow
             </p>
           </div>
 
@@ -332,7 +332,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             Ready to streamline your editing workflow?
           </h2>
           <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of video editors who trust EditFlow to manage their
+            Join thousands of video editors who trust Creaflow to manage their
             business
           </p>
           <Button
@@ -355,7 +355,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 <div className="w-8 h-8 bg-gradient-to-r from-brand-orange to-brand-burgundy rounded-lg flex items-center justify-center">
                   <Video className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold">EditFlow</span>
+                <span className="text-xl font-bold">Creaflow</span>
               </div>
               <p className="text-gray-400">
                 The complete CRM solution for video editors and creative
@@ -428,7 +428,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 EditFlow. All rights reserved.</p>
+            <p>&copy; 2024 Creaflow. All rights reserved.</p>
           </div>
         </div>
       </footer>

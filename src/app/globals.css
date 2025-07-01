@@ -223,7 +223,7 @@
 }
 
 @layer components {
-  /* EditFlow Brand Utilities */
+  /* Creaflow Brand Utilities */
   .bg-brand-orange {
     background-color: hsl(var(--brand-orange));
   }
