@@ -120,3 +120,406 @@
     @apply bg-background text-foreground;
   }
 }
+
+@theme {
+  --radius: 0.75rem;
+
+  --color-brand-orange: #f29f58;
+  --color-brand-burgundy: #ab4459;
+  --color-brand-purple: #441752;
+  --color-brand-navy: #1b1833;
+
+  /* Semantic colors using CSS variables (optional, if you still use them) */
+  --border: 220 14% 90%;
+  --input: 220 14% 97%;
+  --ring: 220 14% 70%;
+  --background: 0 0% 100%;
+  --foreground: 220 15% 15%;
+
+  --primary: 28 90% 60%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 330 50% 40%;
+  --secondary-foreground: 0 0% 100%;
+
+  --destructive: 0 60% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --muted: 220 14% 95%;
+  --muted-foreground: 220 14% 30%;
+
+  --accent: 260 90% 50%;
+  --accent-foreground: 0 0% 100%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 15% 15%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 15% 15%;
+
+  /* Sidebar variants */
+  --sidebar-background: 240 10% 10%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 28 90% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 260 90% 50%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 240 10% 25%;
+  --sidebar-ring: 240 10% 40%;
+
+  /* Animations */
+  --kf-accordion-down: {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  --kf-accordion-up: {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+  --kf-pulse-glow: {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+
+  /* Gradients */
+  --gradient-brand: linear-gradient(
+    135deg,
+    #f29f58 0%,
+    #ab4459 50%,
+    #441752 100%
+  );
+  --gradient-brand-hover: linear-gradient(
+    135deg,
+    #f29f58 0%,
+    #ab4459 30%,
+    #441752 70%,
+    #1b1833 100%
+  );
+}
+
+.btn-primary {
+  background-color: var(--color-brand-orange);
+  color: white;
+  border-radius: var(--radius);
+}
+
+.card-gradient {
+  background-image: var(--gradient-brand);
+}
+
+@layer components {
+  /* EditFlow Brand Utilities */
+  .bg-brand-orange {
+    background-color: hsl(var(--brand-orange));
+  }
+
+  .bg-brand-burgundy {
+    background-color: hsl(var(--brand-burgundy));
+  }
+
+  .bg-brand-purple {
+    background-color: hsl(var(--brand-purple));
+  }
+
+  .bg-brand-dark {
+    background-color: hsl(var(--brand-dark));
+  }
+
+  .text-brand-orange {
+    color: hsl(var(--brand-orange));
+  }
+
+  .text-brand-burgundy {
+    color: hsl(var(--brand-burgundy));
+  }
+
+  .text-brand-purple {
+    color: hsl(var(--brand-purple));
+  }
+
+  .text-brand-dark {
+    color: hsl(var(--brand-dark));
+  }
+
+  .border-brand-orange {
+    border-color: hsl(var(--brand-orange));
+  }
+
+  .border-brand-burgundy {
+    border-color: hsl(var(--brand-burgundy));
+  }
+
+  .border-brand-purple {
+    border-color: hsl(var(--brand-purple));
+  }
+
+  /* Custom gradient backgrounds */
+  .bg-brand-gradient {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--brand-dark)),
+      hsl(var(--brand-purple)),
+      hsl(var(--brand-burgundy))
+    );
+  }
+
+  .bg-brand-gradient-orange {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--brand-orange)),
+      hsl(var(--brand-burgundy))
+    );
+  }
+
+  /* Card hover effects */
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-lg hover:scale-[1.02];
+  }
+
+  /* Status indicators */
+  .status-not-started {
+    @apply bg-zinc-100 text-zinc-800;
+  }
+
+  .status-in-progress {
+    @apply bg-brand-orange/20 text-brand-burgundy;
+  }
+
+  .status-waiting-feedback {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .status-completed {
+    @apply bg-green-100 text-green-800;
+  }
+
+  /* DRAMATIC Dashboard Preview Container Animation - Book Page Turning Effect */
+  .dashboard-preview {
+    @apply transition-all duration-700 ease-out;
+    transform-style: preserve-3d;
+    perspective: 1500px;
+    transform-origin: center left;
+  }
+
+  .dashboard-preview:hover {
+    /* MASSIVE 15-degree tilt like a book page turning */
+    transform: rotateX(12deg) rotateY(-15deg) translateZ(-40px) translateX(20px)
+      translateY(-15px) scale(1.08);
+    /* Deep dramatic shadow */
+    box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.4),
+      0 0 60px rgba(242, 159, 88, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      -20px 0 40px -10px rgba(0, 0, 0, 0.3);
+  }
+
+  .dashboard-preview::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(242, 159, 88, 0.08),
+      rgba(171, 68, 89, 0.08),
+      rgba(68, 23, 82, 0.08)
+    );
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 700ms ease-out;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .dashboard-preview:hover::before {
+    opacity: 1;
+  }
+
+  /* Page turning spine effect */
+  .dashboard-preview::after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.1)
+    );
+    border-radius: 2px 0 0 2px;
+    opacity: 0;
+    transition: opacity 700ms ease-out;
+    z-index: 3;
+  }
+
+  .dashboard-preview:hover::after {
+    opacity: 1;
+  }
+
+  /* Inner content should maintain its position but lift more dramatically */
+  .dashboard-preview-content {
+    position: relative;
+    z-index: 2;
+    transition: transform 700ms ease-out;
+  }
+
+  .dashboard-preview:hover .dashboard-preview-content {
+    transform: translateZ(25px) rotateX(-2deg);
+  }
+
+  /* Enhanced 3D Tilt Effects for Floating Cards */
+  .floating-card {
+    @apply transition-all duration-300 ease-out;
+    transform-style: preserve-3d;
+    perspective: 1200px;
+  }
+
+  .floating-card:hover {
+    @apply lg:shadow-2xl;
+    transform: rotateX(-8deg) rotateY(12deg) translateY(-12px) translateZ(-10px)
+      scale(1.08);
+    box-shadow: 0 35px 70px -12px rgba(0, 0, 0, 0.3),
+      0 0 40px rgba(242, 159, 88, 0.2);
+  }
+
+  .floating-card-left:hover {
+    transform: rotateX(-6deg) rotateY(15deg) translateY(-15px) translateX(12px)
+      translateZ(-8px) scale(1.08);
+  }
+
+  .floating-card-right:hover {
+    transform: rotateX(-6deg) rotateY(-15deg) translateY(-15px)
+      translateX(-12px) translateZ(-8px) scale(1.08);
+  }
+
+  /* Enhanced glow effects */
+  .floating-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(242, 159, 88, 0.12),
+      rgba(171, 68, 89, 0.12),
+      rgba(68, 23, 82, 0.12)
+    );
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 400ms ease-out;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .floating-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Floating animation */
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    33% {
+      transform: translateY(-15px) rotate(1.5deg);
+    }
+    66% {
+      transform: translateY(-8px) rotate(-1.5deg);
+    }
+  }
+
+  .floating-card {
+    animation: float 7s ease-in-out infinite;
+  }
+
+  .floating-card:nth-child(2) {
+    animation-delay: -2.3s;
+  }
+
+  .floating-card:nth-child(3) {
+    animation-delay: -4.6s;
+  }
+
+  /* Breathing animation for dashboard preview */
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(1) rotateX(0deg) rotateY(0deg);
+    }
+    50% {
+      transform: scale(1.008) rotateX(1deg) rotateY(-1deg);
+    }
+  }
+
+  .dashboard-preview {
+    animation: breathe 10s ease-in-out infinite;
+  }
+
+  .dashboard-preview:hover {
+    animation-play-state: paused;
+  }
+
+  /* Enhanced floating dots animation */
+  @keyframes floatingDots {
+    0%,
+    100% {
+      transform: translateY(0px) translateX(0px) scale(1);
+      opacity: 0.6;
+    }
+    33% {
+      transform: translateY(-12px) translateX(6px) scale(1.2);
+      opacity: 1;
+    }
+    66% {
+      transform: translateY(-6px) translateX(-3px) scale(0.9);
+      opacity: 0.8;
+    }
+  }
+
+  .floating-dot {
+    animation: floatingDots 5s ease-in-out infinite;
+  }
+
+  .floating-dot:nth-child(2) {
+    animation-delay: -1.6s;
+  }
+
+  .floating-dot:nth-child(3) {
+    animation-delay: -3.2s;
+  }
+
+  .floating-dot:nth-child(4) {
+    animation-delay: -4.8s;
+  }
+
+  /* Page curl effect for extra book-like feel */
+  @keyframes pageCurl {
+    0% {
+      transform: rotateY(0deg);
+    }
+    100% {
+      transform: rotateY(-5deg);
+    }
+  }
+}

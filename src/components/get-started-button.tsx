@@ -19,15 +19,19 @@ export const GetStartedButton = () => {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <Button size="lg" asChild>
+      <Button
+        size="lg"
+        className="bg-[var(--color-brand-orange)] text-white hover:bg-[var(--color-brand-burgundy)]"
+        asChild
+      >
         <Link href={href}>Get Started</Link>
       </Button>
 
       {session && (
-        <p className="flex items-center gap-2">
+        <p className="flex items-center gap-2 text-white">
           <span
             data-role={session.user.role}
-            className="size-4 rounded-full animate-pulse data-[role=CLIENT]:bg-blue-600 data-[role=ADMIN]:bg-red-600"
+            className="size-4 rounded-full animate-pulse data-[role=CLIENT]:bg-[var(--color-brand-burgundy)] data-[role=ADMIN]:bg-[var(--color-brand-purple)]"
           />
           Welcome back, {session.user.name}! 👋
         </p>
